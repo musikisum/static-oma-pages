@@ -1,0 +1,171 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #f8f7f4;
+  color: #1a1a1a;
+}
+
+.app {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+h1 { font-size: 1.4rem; font-weight: 600; letter-spacing: -0.02em; }
+
+/* Settings */
+.settings {
+  background: #eeecea;
+  border-radius: 10px;
+  padding: 12px 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+  align-items: center;
+}
+.setting-item { display: flex; align-items: center; gap: 8px; }
+label { font-size: 0.88rem; color: #444; }
+select {
+  font-size: 0.88rem;
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: white;
+  color: #1a1a1a;
+  cursor: pointer;
+}
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  color: #444;
+}
+.checkbox-label input[type="checkbox"] {
+  width: 15px; height: 15px;
+  cursor: pointer;
+  accent-color: #2c5f8a;
+}
+
+/* Staff */
+.staff-section {
+  background: white;
+  border: 1px solid #e0ddd8;
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: center;
+}
+#staff-svg {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  display: block;
+}
+.staff-line   { stroke: #333; stroke-width: 1.2; }
+.ledger-line  { stroke: #333; stroke-width: 1.2; }
+.clef-symbol  {
+  fill: #222;
+  font-family: 'Segoe UI Symbol', 'Apple Symbols', 'FreeSerif', serif;
+  position: absolute;
+}
+.note-head    { fill: #1a1a1a; }
+.note-stem    { stroke: #1a1a1a; stroke-width: 1.6; }
+.note-name-label {
+  font-family: system-ui, sans-serif;
+  font-size: 11px;
+  fill: #555;
+  text-anchor: middle;
+}
+
+/* Keyboard */
+.keyboard-section { display: flex; justify-content: center; }
+.keyboard-wrap {
+  overflow-x: auto;
+  padding-bottom: 6px;
+  max-width: 100%;
+}
+.keyboard { position: relative; }
+
+.key {
+  position: absolute;
+  top: 0;
+  border-radius: 0 0 4px 4px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.08s;
+}
+.key.white {
+  background: #fff;
+  border: 1px solid #999;
+  width: 27px;
+  height: 100px;
+  z-index: 1;
+}
+.key.black {
+  background: #1a1a1a;
+  width: 16px;
+  height: 62px;
+  z-index: 2;
+}
+.key.white:hover { background: #eef4ff; }
+.key.black:hover { background: #3a3a3a; }
+.key.middle-c    { background: #a8e6a3 !important; border-color: #5cb85c !important; }
+.key.correct     { background: #a8e6a3 !important; border-color: #5cb85c !important; }
+.key.incorrect   { background: #f4a582 !important; border-color: #e06030 !important; }
+
+/* Note label on key — shown only on the correct (green) key after answering */
+.key .key-label {
+  display: none;
+  position: absolute;
+  bottom: 5px;
+  left: 0; right: 0;
+  text-align: center;
+  font-size: 9px;
+  color: #333;
+  pointer-events: none;
+}
+.key .key-label.visible { display: block; }
+
+/* Stats */
+.stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  font-size: 0.85rem;
+  color: #666;
+}
+#stats-text { letter-spacing: 0.01em; }
+.stats-reset {
+  background: none;
+  border: none;
+  font-size: 0.78rem;
+  color: #aaa;
+  cursor: pointer;
+  padding: 2px 4px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.stats-reset:hover { color: #555; }
+
+/* Controls */
+.controls { display: flex; gap: 12px; justify-content: center; }
+.btn {
+  padding: 10px 26px;
+  font-size: 0.93rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.1s, transform 0.1s;
+}
+.btn:hover   { opacity: 0.87; }
+.btn:active  { transform: scale(0.97); }
+.btn-primary   { background: #2c5f8a; color: white; }
+.btn-secondary { background: #d0ceca; color: #333; }

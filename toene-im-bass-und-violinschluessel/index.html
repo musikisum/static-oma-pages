@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Töne im Bass- und Violinschlüssel</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <section class="settings">
+      <div class="setting-item">
+        <label for="clef-select">Schlüssel</label>
+        <select id="clef-select">
+          <option value="treble">Violinschlüssel</option>
+          <option value="bass">Bassschlüssel</option>
+          <option value="both">Beide</option>
+        </select>
+      </div>
+      <div class="setting-item">
+        <label class="checkbox-label">
+          <input type="checkbox" id="show-names">
+          <span>Notennamen anzeigen</span>
+        </label>
+      </div>
+      <div class="setting-item">
+        <label class="checkbox-label">
+          <input type="checkbox" id="intl-notation">
+          <span>Internationale Schreibweise (C4)</span>
+        </label>
+      </div>
+    </section>
+
+    <section class="staff-section">
+      <svg id="staff-svg" viewBox="0 0 420 140" xmlns="http://www.w3.org/2000/svg"></svg>
+    </section>
+
+    <section class="keyboard-section">
+      <div class="keyboard-wrap">
+        <div id="keyboard" class="keyboard"></div>
+      </div>
+    </section>
+
+    <section class="controls">
+      <button id="btn-reset" class="btn btn-secondary">Zurücksetzen</button>
+      <button id="btn-new" class="btn btn-primary">Neue Aufgabe</button>
+    </section>
+
+    <section class="stats" id="stats-section" hidden>
+      <span id="stats-text"></span>
+      <button id="btn-stats-reset" class="stats-reset">Statistik löschen</button>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
