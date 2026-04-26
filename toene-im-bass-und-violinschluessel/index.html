@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Töne im Bass- und Violinschlüssel</title>
+  <title>Chromatische Töne im Bass- und Violinschlüssel</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -18,15 +18,24 @@
         </select>
       </div>
       <div class="setting-item">
+        <label for="acc-select">Vorzeichen</label>
+        <select id="acc-select">
+          <option value="naturals">Ohne Vorzeichen</option>
+          <option value="sharps">Nur Kreuze (#)</option>
+          <option value="flats">Nur Bes (b)</option>
+          <option value="all">Alle Töne</option>
+        </select>
+      </div>
+      <div class="setting-item">
         <label class="checkbox-label">
           <input type="checkbox" id="show-names">
-          <span>Notennamen anzeigen</span>
+          <span>Notennamen</span>
         </label>
       </div>
       <div class="setting-item">
         <label class="checkbox-label">
           <input type="checkbox" id="intl-notation">
-          <span>Internationale Schreibweise (C4)</span>
+          <span>SPN (c' = C4)</span>
         </label>
       </div>
     </section>

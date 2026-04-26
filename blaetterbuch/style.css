@@ -1,0 +1,198 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: Georgia, 'Times New Roman', serif;
+  background: #f0ede8;
+  color: #1a1a1a;
+}
+
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px 8px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Flipbook container: Height is set dynamically 
+by JS based on current width and orientation.   */
+#flipbook-wrapper {
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Page base: StPageFlip positions these; 
+overflow:hidden prevents bleed-through. */
+.page {
+  background: #fffef9;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid #ddd;
+}
+
+.page-content {
+  padding: 40px 36px 36px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow: hidden;
+}
+
+.page h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c5f8a;
+  border-bottom: 1px solid #dde4ec;
+  padding-bottom: 6px;
+  margin-bottom: 2px;
+}
+
+.page p {
+  font-size: 0.82rem;
+  line-height: 1.65;
+  color: #333;
+}
+
+/* Page number badge */
+.page-number {
+  position: absolute;
+  bottom: 12px;
+  font-size: 0.7rem;
+  color: #aaa;
+  width: 100%;
+  text-align: center;
+}
+
+/* Figures / Images */
+.page-figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1; /* nimmt restlichen Platz in der Seiten-Flex-Spalte */
+  min-height: 0; /* erlaubt Schrumpfen innerhalb von flex */
+}
+
+.page-figure img {
+  max-width: 100%;
+  flex: 1; /* füllt die figure-Höhe */
+  min-height: 0;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+.page-figure figcaption {
+  font-size: 0.7rem;
+  color: #666;
+  text-align: center;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.custom-unordered-list {
+  font-size: 1rem;
+  list-style-position: outside;
+  margin-left: 40px;
+}
+.custom-unordered-list li {
+  padding-left: 10px;
+}
+.custom-page-link {
+  text-decoration: none;
+  color: maroon;
+}
+.cpl-green {
+  color: darkgreen;
+}
+
+/* Cover pages */
+.page-cover {
+  background: #2c5f8a;
+  border: none;
+}
+
+.cover-front {
+  padding-top: 30%;
+  justify-content: top;
+  align-items: center;
+  text-align: center;
+  gap: 20px;
+}
+
+.cover-subtitle {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #a8c8e8 !important;
+}
+
+.cover-title {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #fff;
+}
+
+.cover-edition {
+  font-size: 0.78rem;
+  color: #a8c8e8 !important;
+  letter-spacing: 0.06em;
+}
+
+.cover-back {
+  justify-content: flex-end;
+  align-items: center;
+  text-align: center;
+  padding-bottom: 48px;
+  gap: 6px;
+}
+
+.cover-back p {
+  color: #a8c8e8;
+  font-size: 0.78rem;
+}
+
+.cover-back-url {
+  font-size: 0.7rem !important;
+  letter-spacing: 0.08em;
+}
+
+/* Navigation */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.btn-nav {
+  background: #2c5f8a;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.1s;
+}
+
+.btn-nav:hover   { opacity: 0.8; }
+.btn-nav:active  { transform: scale(0.95); }
+.btn-nav:disabled { opacity: 0.3; cursor: default; }
+
+#page-info {
+  font-family: system-ui, sans-serif;
+  font-size: 0.8rem;
+  color: #777;
+  min-width: 80px;
+  text-align: center;
+}

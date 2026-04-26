@@ -76,6 +76,10 @@ select {
 }
 .note-head    { fill: #1a1a1a; }
 .note-stem    { stroke: #1a1a1a; stroke-width: 1.6; }
+.accidental   {
+  fill: #1a1a1a;
+  font-family: 'Segoe UI Symbol', 'Apple Symbols', 'FreeSerif', serif;
+}
 .note-name-label {
   font-family: system-ui, sans-serif;
   font-size: 11px;

@@ -34,20 +34,56 @@ const STAFF_X2 = 390;
 const LS       = 12;
 const NOTE_X   = 230;
 
+// Chromatic notes share the staff position (y) of the letter note they are written on.
+// C# is on the C line/space (y = C's y); Db is on the D line/space (y = D's y).
 const TREBLE_Y = {
-  'C4': 98, 'D4': 92, 'E4': 86, 'F4': 80, 'G4': 74,
-  'A4': 68, 'B4': 62, 'C5': 56, 'D5': 50, 'E5': 44,
-  'F5': 38, 'G5': 32, 'A5': 26, 'B5': 20, 'C6': 14,
+  // Naturals
+  'C4': 98,  'D4': 92,  'E4': 86,  'F4': 80,  'G4': 74,
+  'A4': 68,  'B4': 62,  'C5': 56,  'D5': 50,  'E5': 44,
+  'F5': 38,  'G5': 32,  'A5': 26,  'B5': 20,  'C6': 14,
+  // Sharps (same y as their letter note)
+  'C#4': 98, 'D#4': 92, 'F#4': 80, 'G#4': 74, 'A#4': 68,
+  'C#5': 56, 'D#5': 50, 'F#5': 38, 'G#5': 32, 'A#5': 26,
+  // Flats (same y as their letter note)
+  'Db4': 92, 'Eb4': 86, 'Gb4': 74, 'Ab4': 68, 'Bb4': 62,
+  'Db5': 50, 'Eb5': 44, 'Gb5': 32, 'Ab5': 26, 'Bb5': 20,
 };
 
 const BASS_Y = {
-  'C2': 110, 'D2': 104, 'E2': 98,  'F2': 92, 'G2': 86,
-  'A2': 80,  'B2': 74,  'C3': 68,  'D3': 62, 'E3': 56,
-  'F3': 50,  'G3': 44,  'A3': 38,  'B3': 32, 'C4': 26,
+  // Naturals
+  'C2': 110, 'D2': 104, 'E2': 98,   'F2': 92,  'G2': 86,
+  'A2': 80,  'B2': 74,  'C3': 68,   'D3': 62,  'E3': 56,
+  'F3': 50,  'G3': 44,  'A3': 38,   'B3': 32,  'C4': 26,
+  // Sharps
+  'C#2': 110, 'D#2': 104, 'F#2': 92, 'G#2': 86, 'A#2': 80,
+  'C#3': 68,  'D#3': 62,  'F#3': 50, 'G#3': 44, 'A#3': 38,
+  // Flats
+  'Db2': 104, 'Eb2': 98,  'Gb2': 86, 'Ab2': 80, 'Bb2': 74,
+  'Db3': 62,  'Eb3': 56,  'Gb3': 44, 'Ab3': 38, 'Bb3': 32,
 };
 
+// ── Chromatic helpers ────────────────────────────────────────────────────────
+
+// All 12 chromatic pitch classes in keyboard (sharp) spelling
+const CHROMATIC_KB = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
+// Returns the accidental symbol for a note key, or null for naturals.
+function accidentalOf(noteOct) {
+  const name = noteOct.slice(0, -1); // everything before the octave digit
+  if (name.includes('#')) return '♯';
+  if (name.length > 1 && name[1] === 'b') return '♭';
+  return null;
+}
+
+// Returns { note, oct } in keyboard (sharp) spelling for a given MIDI number.
+function keyForMidi(midi) {
+  const oct  = Math.floor(midi / 12) - 1;
+  const note = CHROMATIC_KB[midi % 12];
+  return { note, oct };
+}
+
 // ── State ───────────────────────────────────────────────────────────────────
-let currentNote = null; // { key: 'C4', clef: 'treble'|'bass', y: number }
+let currentNote = null; // { key: 'C#4', clef: 'treble'|'bass', y: number }
 let answered    = false;
 const stats     = { correct: 0, attempts: 0, streak: 0 };
 
@@ -57,7 +93,7 @@ function renderStats() {
   const text = document.getElementById('stats-text');
   sec.hidden = false;
   text.textContent =
-    `${stats.correct} von ${stats.attempts} richtig (${pct} %) · Serie: ${stats.streak}`;
+    `${stats.correct} von ${stats.attempts} richtig (${pct} %) · Serie: ${stats.streak}`;
 }
 
 function resetStats() {
@@ -70,7 +106,7 @@ const NOTE_SEMITONES = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
 
 // Salamander Grand Piano samples hosted by Tone.js (CC BY 3.0)
 const SAMPLE_BASE = 'https://tonejs.github.io/audio/salamander/';
-const SAMPLE_MAP  = {          // MIDI number → filename stem
+const SAMPLE_MAP  = {
   36: 'C2',  39: 'Ds2', 42: 'Fs2', 45: 'A2',
   48: 'C3',  51: 'Ds3', 54: 'Fs3', 57: 'A3',
   60: 'C4',  63: 'Ds4', 66: 'Fs4', 69: 'A4',
@@ -79,8 +115,8 @@ const SAMPLE_MAP  = {          // MIDI number → filename stem
 };
 const SAMPLE_MIDIS = Object.keys(SAMPLE_MAP).map(Number);
 
-const rawCache = {};  // midi → ArrayBuffer  (fetched, not yet decoded)
-const bufCache = {};  // midi → AudioBuffer  (decoded, ready to play)
+const rawCache = {};
+const bufCache = {};
 let   audioCtx = null;
 
 function getAudioCtx() {
@@ -88,10 +124,15 @@ function getAudioCtx() {
   return audioCtx;
 }
 
+// Handles natural and chromatic note names: 'C4', 'C#4', 'Db4', 'A#3', 'Bb3', …
 function noteToMidi(noteOct) {
-  const note = noteOct.slice(0, -1);
+  const name = noteOct.slice(0, -1);          // e.g. 'C', 'C#', 'Db'
   const oct  = parseInt(noteOct.slice(-1));
-  return (oct + 1) * 12 + NOTE_SEMITONES[note];
+  const base = name[0];
+  const acc  = name.length > 1 ? name[1] : '';
+  const semitone = NOTE_SEMITONES[base]
+    + (acc === '#' ? 1 : acc === 'b' ? -1 : 0);
+  return (oct + 1) * 12 + semitone;
 }
 
 function nearestSampleMidi(midi) {
@@ -121,7 +162,6 @@ async function playNote(noteOct) {
   const midi    = noteToMidi(noteOct);
   const smpMidi = nearestSampleMidi(midi);
 
-  // Decode on first use (ArrayBuffer is cloned so rawCache stays intact)
   if (!bufCache[smpMidi] && rawCache[smpMidi]) {
     bufCache[smpMidi] = await ctx.decodeAudioData(rawCache[smpMidi].slice(0));
   }
@@ -141,7 +181,6 @@ async function playNote(noteOct) {
   src.stop(now + 4);
 }
 
-// Fetch all MP3s in parallel on page load (no AudioContext needed yet)
 function preloadSamples() {
   Object.entries(SAMPLE_MAP).forEach(([midi, name]) => {
     fetch(SAMPLE_BASE + name + '.mp3')
@@ -169,15 +208,22 @@ function ledgerLineYs(noteY) {
   return out;
 }
 
-// ── Note bag (shuffle all notes before repeating any) ────────────────────────
+// ── Note bag ─────────────────────────────────────────────────────────────────
 let noteBag = [];
 
-function fillBag(clefVal) {
+function fillBag(clefVal, accVal) {
   const entries = [];
-  if (clefVal !== 'bass')
-    Object.keys(TREBLE_Y).forEach(key => entries.push({ key, clef: 'treble', y: TREBLE_Y[key] }));
-  if (clefVal !== 'treble')
-    Object.keys(BASS_Y).forEach(key => entries.push({ key, clef: 'bass', y: BASS_Y[key] }));
+  const addClef = (map, clef) => {
+    Object.entries(map).forEach(([key, y]) => {
+      const acc = accidentalOf(key);
+      if (accVal === 'naturals' && acc !== null) return;
+      if (accVal === 'sharps'   && acc !== '♯') return;
+      if (accVal === 'flats'    && acc !== '♭') return;
+      entries.push({ key, clef, y });
+    });
+  };
+  if (clefVal !== 'bass')   addClef(TREBLE_Y, 'treble');
+  if (clefVal !== 'treble') addClef(BASS_Y,   'bass');
   // Fisher-Yates shuffle
   for (let i = entries.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -186,19 +232,32 @@ function fillBag(clefVal) {
   noteBag = entries;
 }
 
-function pickNote(clefVal) {
-  if (noteBag.length === 0) fillBag(clefVal);
+function pickNote(clefVal, accVal) {
+  if (noteBag.length === 0) fillBag(clefVal, accVal);
   return noteBag.pop();
 }
 
+// ── Note name formatting ─────────────────────────────────────────────────────
+const DE_SHARP = { C: 'Cis', D: 'Dis', F: 'Fis', G: 'Gis', A: 'Ais' };
+const DE_FLAT  = { D: 'Des', E: 'Es',  G: 'Ges', A: 'As',  B: 'B'   };
+const DE_NAT   = { C: 'C',  D: 'D',   E: 'E',   F: 'F',   G: 'G',  A: 'A', B: 'H' };
+
 function formatNoteName(noteOct, intl) {
-  const note = noteOct.slice(0, -1);
+  const name = noteOct.slice(0, -1); // 'C', 'C#', 'Db', …
   const oct  = parseInt(noteOct.slice(-1));
-  if (intl) return note + oct;
-  const de = note === 'B' ? 'H' : note;
-  if (oct <= 2) return de;                              // C2 → C
-  if (oct === 3) return de.toLowerCase();               // C3 → c
-  return de.toLowerCase() + "'".repeat(oct - 3);        // C4 → c', C5 → c''
+  const base = name[0];
+  const acc  = name.length > 1 ? name[1] : '';
+
+  if (intl) return name + oct;
+
+  let deName;
+  if (acc === '#') deName = DE_SHARP[base];
+  else if (acc === 'b') deName = DE_FLAT[base];
+  else deName = DE_NAT[base];
+
+  if (oct <= 2) return deName;
+  if (oct === 3) return deName.toLowerCase();
+  return deName.toLowerCase() + "'".repeat(oct - 3);
 }
 
 // ── Draw staff ──────────────────────────────────────────────────────────────
@@ -220,9 +279,8 @@ function drawStaff(clef) {
 }
 
 function drawNote(note) {
-  const svg  = document.getElementById('staff-svg');
+  const svg = document.getElementById('staff-svg');
   const { y } = note;
-  const intl  = document.getElementById('intl-notation').checked;
 
   ledgerLineYs(y).forEach(ly =>
     svg.appendChild(mkSvg('line', {
@@ -230,13 +288,30 @@ function drawNote(note) {
     }))
   );
 
+  const acc = accidentalOf(note.key);
+  if (acc) {
+    // ── Vorzeichen-Position anpassen ────────────────────────────────────────
+    const ACC_X    = NOTE_X - 18;          // x: Abstand links vom Notenkopf-Mittelpunkt
+    const ACC_SIZE = 30;                   // Schriftgröße in px
+    const ACC_Y    = acc === '♭' ? y - 8 : y; // ♭ etwas höher, damit der Bauch auf Notenhöhe liegt
+    // ────────────────────────────────────────────────────────────────────────
+    const accEl = mkSvg('text', {
+      x: ACC_X, y: ACC_Y,
+      class: 'accidental',
+      'text-anchor': 'middle',
+      'dominant-baseline': 'central',
+      'font-size': ACC_SIZE,
+    });
+    accEl.textContent = acc;
+    svg.appendChild(accEl);
+  }
+
   svg.appendChild(mkSvg('ellipse', {
     cx: NOTE_X, cy: y, rx: 6, ry: 4.5,
     transform: `rotate(-20, ${NOTE_X}, ${y})`,
     class: 'note-head'
   }));
 
-  // Stem up (right side) when note is on/below middle line; stem down (left side) when above
   if (y >= LINE_Y[2]) {
     svg.appendChild(mkSvg('line', {
       x1: NOTE_X + 5.5, y1: y - 3, x2: NOTE_X + 5.5, y2: y - 34, class: 'note-stem'
@@ -246,7 +321,6 @@ function drawNote(note) {
       x1: NOTE_X - 5.5, y1: y + 3, x2: NOTE_X - 5.5, y2: y + 34, class: 'note-stem'
     }));
   }
-
 }
 
 // ── Keyboard ─────────────────────────────────────────────────────────────────
@@ -274,10 +348,10 @@ function updateKeyLabel() {
     .forEach(l => l.classList.remove('visible'));
   labelMiddleC();
   if (!answered || !currentNote || !showNames.checked) return;
-  const noteName = currentNote.key.slice(0, -1);
-  const noteOct  = currentNote.key.slice(-1);
+  // Flat notes (e.g. Db4) live on the C# key — find the key by MIDI pitch
+  const { note: kbNote, oct: kbOct } = keyForMidi(noteToMidi(currentNote.key));
   const greenKey = document.querySelector(
-    `#keyboard .key[data-note="${noteName}"][data-octave="${noteOct}"]`
+    `#keyboard .key[data-note="${kbNote}"][data-octave="${kbOct}"]`
   );
   if (!greenKey) return;
   const intl  = document.getElementById('intl-notation').checked;
@@ -301,7 +375,7 @@ function buildKeyboard(clef) {
     const keys   = oct < range.end ? OCTAVE_KEYS : OCTAVE_KEYS.slice(0, 1);
     keys.forEach(k => {
       const el = document.createElement('div');
-      el.className    = `key ${k.white ? 'white' : 'black'}`;
+      el.className      = `key ${k.white ? 'white' : 'black'}`;
       el.dataset.note   = k.note;
       el.dataset.octave = oct;
       el.style.left     = (offset + k.left) + 'px';
@@ -324,7 +398,7 @@ function activeClef() {
 }
 
 function newTask() {
-  currentNote = pickNote(clefSelect.value);
+  currentNote = pickNote(clefSelect.value, accSelect.value);
   answered    = false;
   clearKeyFeedback();
   drawStaff(activeClef());
@@ -364,27 +438,33 @@ function redrawCurrentNote() {
 
 // ── Event listeners ───────────────────────────────────────────────────────────
 const clefSelect = document.getElementById('clef-select');
+const accSelect  = document.getElementById('acc-select');
 const showNames  = document.getElementById('show-names');
 
 document.getElementById('keyboard').addEventListener('click', e => {
   const keyEl = e.target.closest('.key');
   if (!keyEl || !currentNote || answered) return;
   answered = true;
-  const clicked   = keyEl.dataset.note + keyEl.dataset.octave;
-  const isCorrect = clicked === currentNote.key;
-  playNote(clicked);
+
+  const clickedKey  = keyEl.dataset.note + keyEl.dataset.octave;
+  const clickedMidi = noteToMidi(clickedKey);
+  const targetMidi  = noteToMidi(currentNote.key);
+  const isCorrect   = clickedMidi === targetMidi;
+
+  playNote(clickedKey);
   stats.attempts++;
   if (isCorrect) { stats.correct++; stats.streak++; }
   else            { stats.streak = 0; }
   renderStats();
+
   if (isCorrect) {
     keyEl.classList.add('correct');
   } else {
     keyEl.classList.add('incorrect');
-    const noteName = currentNote.key.slice(0, -1);
-    const noteOct  = currentNote.key.slice(-1);
-    const correct  = document.querySelector(
-      `#keyboard .key[data-note="${noteName}"][data-octave="${noteOct}"]`
+    // Flat notes live on the sharp key (Db4 → C# key) — find by MIDI
+    const { note: kbNote, oct: kbOct } = keyForMidi(targetMidi);
+    const correct = document.querySelector(
+      `#keyboard .key[data-note="${kbNote}"][data-octave="${kbOct}"]`
     );
     if (correct) correct.classList.add('correct');
   }
@@ -396,6 +476,8 @@ clefSelect.addEventListener('change', () => {
   buildKeyboard(clefSelect.value);
   clearAll();
 });
+
+accSelect.addEventListener('change', () => { noteBag = []; });
 
 showNames.addEventListener('change', updateKeyLabel);
 document.getElementById('intl-notation').addEventListener('change', updateKeyLabel);
