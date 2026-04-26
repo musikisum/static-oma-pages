@@ -11,6 +11,8 @@
 </tr>
 </table>
 
+**🔗 [musikisum.github.io/static-oma-pages](https://musikisum.github.io/static-oma-pages/)**
+
 ---
 
 ## Spiele / Games
