@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Blätterbuch (Text)",
+    "icon": "📄",
+    "description": "Compliance-Regeln für den öffentlichen Bereich",
+    "entry": "index.html"
+  },
+  {
+    "name": "Blätterbuch (Noten)",
+    "icon": "🎼",
+    "description": "Friedemann Bach – Six Polonoises (Faksimile)",
+    "entry": "index-image.html"
+  }
+]
