@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm -rf \"d:/dev/static-oma-pages/modi-auf-dem-klavier\")"
+    ],
+    "additionalDirectories": [
+      "d:\\dev\\static-oma-pages\\modi-auf-dem-klavier"
+    ]
+  }
+}

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tonmaterial der Kirchentonarten</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <section class="settings">
+      <div class="setting-item">
+        <label for="mode-filter">Modi</label>
+        <select id="mode-filter">
+          <optgroup label="Einzelne Modi">
+            <option value="m-Dorisch">Dorisch</option>
+            <option value="m-Hypodorisch">Hypodorisch</option>
+            <option value="m-Phrygisch">Phrygisch</option>
+            <option value="m-Hypophrygisch">Hypophrygisch</option>
+            <option value="m-Lydisch">Lydisch</option>
+            <option value="m-Hypolydisch">Hypolydisch</option>
+            <option value="m-Mixolydisch">Mixolydisch</option>
+            <option value="m-Hypomixolydisch">Hypomixolydisch</option>
+            <option value="m-Äolisch">Äolisch</option>
+            <option value="m-Hypoäolisch">Hypoäolisch</option>
+            <option value="m-Ionisch">Ionisch</option>
+            <option value="m-Hypoionisch">Hypoionisch</option>
+            <option value="m-Lokrisch">Lokrisch</option>
+            <option value="m-Hypolokrisch">Hypolokrisch</option>
+          </optgroup>
+          <optgroup label="Gruppen">
+            <option value="8">8 Modi (Dorisch–Mixolydisch)</option>
+            <option value="12" selected>12 Modi (+ Äolisch &amp; Ionisch)</option>
+            <option value="all">Alle (mit Lokrisch)</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="setting-item">
+        <label class="checkbox-label">
+          <input type="checkbox" id="transpositionen" autocomplete="off">
+          <span>Transpositionen</span>
+        </label>
+      </div>
+      <div class="setting-item">
+        <label class="checkbox-label">
+          <input type="checkbox" id="show-ambitus" autocomplete="off">
+          <span>Ambitus zeigen</span>
+        </label>
+      </div>
+      <div class="setting-item">
+        <label class="checkbox-label">
+          <input type="checkbox" id="show-names" autocomplete="off">
+          <span>Tastennamen</span>
+        </label>
+      </div>
+    </section>
+
+    <section class="mode-display">
+      <div class="mode-name" id="mode-name">–</div>
+      <div class="mode-info" id="mode-info">Klicke „Neue Aufgabe" zum Starten</div>
+    </section>
+
+    <section class="keyboard-section">
+      <div class="keyboard-wrap">
+        <div id="keyboard" class="keyboard"></div>
+      </div>
+    </section>
+
+    <section class="controls">
+      <button id="btn-new" class="btn btn-primary">Neue Aufgabe</button>
+    </section>
+
+    <section class="stats" id="stats-section" hidden>
+      <span id="stats-text"></span>
+      <button id="btn-stats-reset" class="stats-reset">Statistik löschen</button>
+    </section>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
